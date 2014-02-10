@@ -1097,6 +1097,7 @@ case $1 in
 	--auto)
 
 		## Ejecutamos la función AUTO y volcamos tanto a la salida estandar como hacia el archivo log
+		date > $LOG
 		AUTO | tee -a $LOG
 		echo ""
 		echo "Se ha generado un informe en $LOG"

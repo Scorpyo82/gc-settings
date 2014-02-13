@@ -230,6 +230,14 @@ function BOOTANIMATION_DESABLE(){
 	echo "" 
 	echo "Desactivando el uso de bootanimation y sonido de inicio..." 
 
+	# Controla que no se haya instalado otra animación de encendido mientras la original estaba desactivada
+	if [ -e /system/media/bootanimation.zip.off ] && [ -e /system/media/bootanimation.zip ]
+	then
+		echo "Recientemente se ha instalado otro bootanimatión, así que se elimina el antiguo"
+		rm -f /system/media/bootanimation.zip.off
+	fi
+
+	# Desactivada la animación de encendido si se encuentra activada
 	if [ -e /system/media/bootanimation.zip ]
 	then
 		mv /system/media/bootanimation.zip /system/media/bootanimation.zip.off
@@ -238,6 +246,14 @@ function BOOTANIMATION_DESABLE(){
 		echo "Bootanimation parece que ya estaba desactivado" 
 	fi
 
+	# Controla que no se haya instalado otra sonido de encendido mientras la original estaba desactivada
+	if [ -e /system/etc/poweron.ogg ] && [ -e /system/etc/poweron.ogg.off ]
+	then
+		echo "Recientemente se ha instalado otro sonido de animación, así que se elimina el antiguo"
+		rm -f /system/etc/poweron.ogg.off
+	fi
+
+	# Desactivada el sonido de encendido si se encuentra activado
 	if [ -e /system/etc/poweron.ogg ]
 	then
 		mv /system/etc/poweron.ogg /system/etc/poweron.ogg.off
@@ -296,6 +312,14 @@ function SHUTDOWNANIMATION_DESABLE(){
 	echo "" 
 	echo "Desactivando el uso de shutdownanimation y sonido de apagado..." 
 
+	# Controla que no se haya instalado otra animación de apagado mientras la original estaba desactivada
+	if [ -e /system/media/video/shutdown/shutdown.qmg ] && [ -e /system/media/video/shutdown/shutdown.qmg.off ]
+	then
+		echo "Recientemente se ha instalado otra animación de apagado, así que se elimina la antiguo"
+		rm -f /system/media/video/shutdown/shutdown.qmg.off
+	fi
+
+	# Desactivada la animación de apagado si se encuentra activada
 	if [ -e /system/media/video/shutdown/shutdown.qmg ]
 	then
 		mv /system/media/video/shutdown/shutdown.qmg /system/media/video/shutdown/shutdown.qmg.off
@@ -303,7 +327,14 @@ function SHUTDOWNANIMATION_DESABLE(){
 	else
 		echo "El shotdownanimation ya parece estar desactivado" 
 	fi
-	
+
+	# Controla que no se haya instalado otro sonido de apagado mientras la original estaba desactivado
+	if [ -e /system/media/audio/ui/shutdown.ogg ] && [ -e /system/media/audio/ui/shutdown.ogg.off ]
+	then
+		echo "Recientemente se ha instalado otro sonido de apagado, así que se elimina el antiguo"
+		rm -f /system/media/audio/ui/shutdown.ogg.off
+	fi
+
 	if [ -e /system/media/audio/ui/shutdown.ogg ]
 	then
 		mv /system/media/audio/ui/shutdown.ogg /system/media/audio/ui/shutdown.ogg.off

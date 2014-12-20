@@ -40,9 +40,9 @@
 #    rooteados y con busybox instalado.
 
 
-VERSION="1.1"
+VERSION="1.2"
 NAME="gc-settings"
-LOG="/data/$NAMME$VER.log"
+LOG="/data/$NAMME_$VERSION.log"
 PATH_XML="/data/data/es.pccitos.gcsettings/shared_prefs/ajustesGC.xml"
 PATH_GCSETTINGS="/system/xbin/gc-settings"
 PATH_FILE_INIT_D="/system/etc/init.d/06gc-settings"
@@ -71,7 +71,7 @@ function CHECK_RUN(){
 	do
 		if [ ! -e $LOCKFILE ]; then
 			# Si no existe el archivo de bloqueo se crea
-			# crea uno nuevo y se continua con la ejecución
+			# uno nuevo y se continua con la ejecución
 			touch $LOCKFILE
 			break
 		else
@@ -540,13 +540,14 @@ function KILL_APK(){
 	then
 		echo "La aplicación está corriendo y se va a cerrar..."
 		#kill $(ps | grep $i | awk '{print $2}')
+		ps | grep $i | awk '{print $2}' | xargs kill
 		pm disable $i
 		
 		if [ $? == "0" ]
 		then
-			echo "¡Aplicación $i cerrada con éxito!"
+			echo "¡Aplicación $i cerrada y bloqueada con éxito!"
 		else
-			echo "La apliación no se pudo cerrar adecuadamente"
+			echo "La apliación no se pudo bloqueada adecuadamente"
 		fi
 	else
 		echo "La aplicación no está ejecutándose."
@@ -738,15 +739,19 @@ function CALCULAR_ESPACIO_PARA_APP(){
 
 	# Obtenemos el espacio libre en /system antes de hacer ninguna operación
 	ESPACIOSYSTEM=$(busybox df 2> /dev/null | grep "/dev/stl9" | awk '{ print $4 }')
+	echo "Calculando espacio de system..."
 	if [ "$ESPACIOSYSTEM" == "" ]
 	then
 		echo ""
 		echo "No se pudo calcular el espacio que hay en /system/" 
 		SALIR
+	else
+		echo "Hecho!"
 	fi
 
 	# Obtenemos el tamaño en Kb del arcvhivo al que se apuntaba:
 	SIZE_APP_UPDATE=$(busybox ls -s $PATH_APP_UPDATE 2> /dev/null | awk '{ print $1}')
+	echo "Calculando tamaño de la actualización"
 	if [ "$SIZE_APP_UPDATE" == "" ]
 	then
 		echo ""
@@ -761,7 +766,10 @@ function CALCULAR_ESPACIO_PARA_APP(){
 		echo ""
 		echo "No se pudo calcular el tamaño de la app original" 
 		echo "Eso puede indicar que no existe..." 
-		SALIR
+		
+		# Establecemos el tamaño de la app a cero (porque o existe)
+		SIZE_APP_ORIGINAL=0
+		#SALIR
 	fi
 
 	# Calculamos el espacio que quedaría en /system/ si eliminácemos la aplicación original:
@@ -769,7 +777,8 @@ function CALCULAR_ESPACIO_PARA_APP(){
 	if [ "$SIZE_DELETE_ORIGINAL" == "" ]
 	then
 		echo ""
-		echo "No se pudo calcular el espacio que se podría liberar" 
+		echo "No se pudo calcular el espacio que se podría liberar"
+		echo "Y por tanto no se puede mover la app"
 		SALIR
 	fi
 
